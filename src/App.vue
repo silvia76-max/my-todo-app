@@ -6,7 +6,7 @@
 </template>
 
 <script>
-import ToDoList from './components/ToDoList.vue';
+import ToDoList from './components/ToDoList.vue'; // Asegúrate de que este es el camino correcto
 
 export default {
   components: {

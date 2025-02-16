@@ -1,23 +1,45 @@
 <template>
-  <div id="app">
-    <ToDoList />
+  <div>
+    <h2>Lista de Tareas</h2>
+    <input v-model="nuevaTarea" @keyup.enter="agregarTarea" placeholder="Añadir tarea" />
+    <button @click="agregarTarea">Agregar</button>
+    <ul>
+      <li v-for="(tarea, index) in tareas" :key="index">
+        {{ tarea }}
+        <button @click="eliminarTarea(index)">❌</button>
+      </li>
+    </ul>
   </div>
 </template>
 
 <script>
-import ToDoList from '../components/ToDoList.vue';
-
 export default {
-  components: {
-    ToDoList
+  data() {
+    return {
+      nuevaTarea: "",
+      tareas: []
+    };
+  },
+  methods: {
+    agregarTarea() {
+      if (this.nuevaTarea.trim() !== "") {
+        this.tareas.push(this.nuevaTarea);
+        this.nuevaTarea = "";
+      }
+    },
+    eliminarTarea(index) {
+      this.tareas.splice(index, 1);
+    }
   }
 };
 </script>
 
 <style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  text-align: center;
-  margin-top: 50px;
+input {
+  padding: 5px;
+  margin-right: 10px;
+}
+button {
+  cursor: pointer;
 }
 </style>
