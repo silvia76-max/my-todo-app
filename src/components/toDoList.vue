@@ -4,16 +4,16 @@
     
     <input v-model="nuevaTarea" @keyup.enter="agregarTarea" placeholder="Añadir tarea" />
     <button @click="agregarTarea">Agregar</button>
-    
-  <ul>
-      <li v-for="(tarea, index) in tareas" :key="index" :class="{ completada: tarea.completada }">
-        <span v-if="!tarea.editando" @click="toggleCompletada(index)">{{ tarea.texto }}</span>
-        <input v-else v-model="tarea.texto" @keyup.enter="guardarEdicion(index)" @blur="guardarEdicion(index)" />
+   <ul>
+  <li v-for="(tarea, index) in tareas" :key="index" :class="{ completada: tarea.completada }">
+    <span v-if="!tarea.editando" @click="toggleCompletada(index)">{{ tarea.texto }}</span>
+    <input v-else v-model="tarea.texto" @keyup.enter="guardarEdicion(index)" @blur="guardarEdicion(index)" />
     
     <button @click="editarTarea(index)">✏️</button>
     <button @click="eliminarTarea(index)">❌</button>
   </li>
 </ul>
+
 
   </div>
 </template>
@@ -29,19 +29,18 @@ export default {
   methods: {
     agregarTarea() {
       if (this.nuevaTarea.trim() !== "") {
-        this.tareas.push({ texto: this.nuevaTarea, completada: false });
+        this.tareas.push({ texto: this.nuevaTarea, completada: false, editando: false });
         this.nuevaTarea = "";
         this.guardarEnLocalStorage();
       }
-        },
-        editarTarea(index) {
+    },
+    editarTarea(index) {
       this.tareas[index].editando = true;
     },
-      guardarEdicion(index) {
+    guardarEdicion(index) {
       this.tareas[index].editando = false;
-      this.guardarEnLocalStorage(); // Guardamos el cambio en localStorage
-      }
-    
+      this.guardarEnLocalStorage();
+    },
     eliminarTarea(index) {
       this.tareas.splice(index, 1);
       this.guardarEnLocalStorage();
@@ -65,6 +64,7 @@ export default {
   }
 };
 </script>
+
 
 <style>
 input {
