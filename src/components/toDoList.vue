@@ -1,20 +1,31 @@
 <template>
   <div>
-    <h2>Lista de Tareas</h2>
-    
-    <input v-model="nuevaTarea" @keyup.enter="agregarTarea" placeholder="Añadir tarea" />
+    <h1>Mi To-Do List en Vue</h1>
+
+    <!-- Input para agregar tareas -->
+    <input v-model="nuevaTarea" @keyup.enter="agregarTarea" placeholder="Añadir tarea..." />
     <button @click="agregarTarea">Agregar</button>
-   <ul>
-  <li v-for="(tarea, index) in tareas" :key="index" :class="{ completada: tarea.completada }">
-    <span v-if="!tarea.editando" @click="toggleCompletada(index)">{{ tarea.texto }}</span>
-    <input v-else v-model="tarea.texto" @keyup.enter="guardarEdicion(index)" @blur="guardarEdicion(index)" />
-    
-    <button @click="editarTarea(index)">✏️</button>
-    <button @click="eliminarTarea(index)">❌</button>
-  </li>
-</ul>
 
+    <!-- Controles para filtrar y ordenar -->
+    <div class="controles">
+      <button @click="filtro = 'todas'">Todas</button>
+      <button @click="filtro = 'pendientes'">Pendientes</button>
+      <button @click="filtro = 'completadas'">Completadas</button>
 
+      <button @click="ordenarPorTexto">Ordenar A-Z</button>
+      <button @click="ordenarPorEstado">Ordenar por Estado</button>
+    </div>
+
+    <!-- Lista de tareas -->
+    <ul>
+      <li v-for="(tarea, index) in tareasFiltradas" :key="index">
+        <input type="checkbox" v-model="tarea.completada" @change="toggleCompletada(index)" />
+        <span :class="{ completada: tarea.completada }">{{ tarea.texto }}</span>
+
+        <button @click="editarTarea(index)">✏️</button>
+        <button @click="eliminarTarea(index)">❌</button>
+      </li>
+    </ul>
   </div>
 </template>
 
@@ -23,30 +34,42 @@ export default {
   data() {
     return {
       nuevaTarea: "",
-      tareas: []
+      tareas: [],
+      filtro: "todas" // Filtro activo (todas, pendientes, completadas)
     };
+  },
+  computed: {
+    tareasFiltradas() {
+      if (this.filtro === "pendientes") {
+        return this.tareas.filter(t => !t.completada);
+      } else if (this.filtro === "completadas") {
+        return this.tareas.filter(t => t.completada);
+      }
+      return this.tareas;
+    }
   },
   methods: {
     agregarTarea() {
       if (this.nuevaTarea.trim() !== "") {
-        this.tareas.push({ texto: this.nuevaTarea, completada: false, editando: false });
+        this.tareas.push({ texto: this.nuevaTarea, completada: false });
         this.nuevaTarea = "";
         this.guardarEnLocalStorage();
       }
     },
-    editarTarea(index) {
-      this.tareas[index].editando = true;
-    },
-    guardarEdicion(index) {
-      this.tareas[index].editando = false;
+    toggleCompletada(index) {
+      this.tareas[index].completada = !this.tareas[index].completada;
       this.guardarEnLocalStorage();
     },
     eliminarTarea(index) {
       this.tareas.splice(index, 1);
       this.guardarEnLocalStorage();
     },
-    toggleCompletada(index) {
-      this.tareas[index].completada = !this.tareas[index].completada;
+    ordenarPorTexto() {
+      this.tareas.sort((a, b) => a.texto.localeCompare(b.texto));
+      this.guardarEnLocalStorage();
+    },
+    ordenarPorEstado() {
+      this.tareas.sort((a, b) => a.completada - b.completada);
       this.guardarEnLocalStorage();
     },
     guardarEnLocalStorage() {
@@ -65,34 +88,16 @@ export default {
 };
 </script>
 
-
 <style>
-input {
-  padding: 5px;
-  margin-right: 10px;
-}
-
-button {
-  cursor: pointer;
-  margin-left: 5px;
-}
-
-ul {
-  list-style: none;
-  padding: 0;
-}
-
-li {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin: 5px 0;
-  padding: 5px;
-  border-bottom: 1px solid #ccc;
-}
-
 .completada {
   text-decoration: line-through;
   color: gray;
+}
+.controles {
+  margin: 10px 0;
+}
+button {
+  margin: 5px;
+  padding: 5px;
 }
 </style>
