@@ -1,6 +1,9 @@
 <template>
-  <div>
-    <h1>Mi To-Do List en Vue</h1>
+  <div :class="modoOscuro ? 'dark-mode' : 'light-mode'">
+    
+
+    <!-- Botón para cambiar entre modo día/noche -->
+    <button @click="toggleModo">🌞/🌙</button>
 
     <!-- Input para agregar tareas -->
     <input v-model="nuevaTarea" @keyup.enter="agregarTarea" placeholder="Añadir tarea..." />
@@ -35,7 +38,8 @@ export default {
     return {
       nuevaTarea: "",
       tareas: [],
-      filtro: "todas" // Filtro activo (todas, pendientes, completadas)
+      filtro: "todas",
+      modoOscuro: false, // Estado inicial del modo oscuro
     };
   },
   computed: {
@@ -49,6 +53,10 @@ export default {
     }
   },
   methods: {
+    toggleModo() {
+      this.modoOscuro = !this.modoOscuro;
+      localStorage.setItem("modoOscuro", this.modoOscuro);
+    },
     agregarTarea() {
       if (this.nuevaTarea.trim() !== "") {
         this.tareas.push({ texto: this.nuevaTarea, completada: false });
@@ -80,6 +88,8 @@ export default {
       if (tareasGuardadas) {
         this.tareas = JSON.parse(tareasGuardadas);
       }
+      const modoGuardado = localStorage.getItem("modoOscuro");
+      this.modoOscuro = modoGuardado === "true";
     }
   },
   created() {
@@ -89,15 +99,42 @@ export default {
 </script>
 
 <style>
-.completada {
-  text-decoration: line-through;
-  color: gray;
+/* Estilos generales */
+body {
+  transition: background 0.3s, color 0.3s;
 }
-.controles {
-  margin: 10px 0;
+
+/* Modo claro */
+.light-mode {
+  background-color: white;
+  color: black;
 }
+
+/* Modo oscuro */
+.dark-mode {
+  background-color: #121212;
+  color: white;
+}
+
+/* Estilos de botones */
 button {
   margin: 5px;
   padding: 5px;
+  cursor: pointer;
+  border: none;
+  border-radius: 5px;
+  transition: background 0.3s, color 0.3s;
+}
+
+/* Botón de modo oscuro */
+button:hover {
+  background: #555;
+  color: white;
+}
+
+/* Tareas completadas */
+.completada {
+  text-decoration: line-through;
+  color: gray;
 }
 </style>
